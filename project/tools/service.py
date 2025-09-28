@@ -7,7 +7,7 @@ from tools.views import Done
 
 T = TypeVar('T', bound=BaseModel)
 
-class Controller():
+class ToolsController():
 	def __init__(
 		self,
 		exclude_tools: list[str] = [],
