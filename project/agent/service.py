@@ -6,7 +6,6 @@ from tools.views import AgentOutput
 from agent.message_manager import MessageManager
 
 import os
-import asyncio
 import logging
 logging.basicConfig(
     level=logging.DEBUG,  # or logging.INFO
@@ -23,23 +22,17 @@ llm = AzureChatOpenAI(
     api_version=os.environ.get('AZURE_OPENAI_VERSION')
 )
 
-class CheckWeather(BaseModel):
-    place: str
-
-class ExecDb(BaseModel):
-    query: str
-
-class SimpleAgent():
-    def __init__(self, task, controller: ToolsController = ToolsController()):
+class Agent():
+    def __init__(self, task, tools_controller: ToolsController = ToolsController()):
         self.llm = llm
-        self.controller = controller
+        self.tools_controller = tools_controller
 
-        self.ToolOutputModel = self.controller.registry.create_tool_model()
+        self.ToolOutputModel = self.tools_controller.registry.create_tool_model()
         self.AgentOutput = AgentOutput.type_with_custom_tools(self.ToolOutputModel)
 
         self.message_manager = MessageManager(
             task,
-            tools_description=self.controller.registry.get_prompt_description()
+            tools_description=self.tools_controller.registry.get_prompt_description()
         )
 
     async def get_structured_response(self, messages, response_model:  Type[T]) -> T:
@@ -59,7 +52,7 @@ class SimpleAgent():
 
             self.message_manager.add_model_output(next_action)
 
-            result = await self.controller.act(next_action.choice)
+            result = await self.tools_controller.act(next_action.choice)
             logger.info(f"result : {result.content}")
 
             if result.is_done:
@@ -68,17 +61,3 @@ class SimpleAgent():
                 break
             
             self.message_manager.add_response(result.content)
-
-if __name__ == "__main__":
-    controller = ToolsController()
-
-    @controller.registry.tool("Check weather", param_model=CheckWeather)
-    async def check_weather(params: CheckWeather) -> ToolResult:
-        return ToolResult(content="Weather is hot, about 35 degree celcius")
-
-    @controller.registry.tool("Interact with database", param_model=ExecDb)
-    async def sql(params: ExecDb) -> ToolResult:
-        return ToolResult(content="Successfully executed query")
-    
-    agent = SimpleAgent("Check weather of sansfransisco and insert to my db", controller=controller)
-    asyncio.run(agent.run())

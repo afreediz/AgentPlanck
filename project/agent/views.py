@@ -31,11 +31,6 @@ class AgentOutput(BaseModel):
 		model_.__doc__ = 'AgentOutput model with custom actions'
 		return model_
 
-
-class Result(BaseModel):
-    content: str
-    successfull: bool = False
-
 class AgentResult(BaseModel):
     content: str
     successfull: str
