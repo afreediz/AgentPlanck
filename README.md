@@ -37,7 +37,7 @@ class ExecDb(BaseModel):
     query: str
 
 async def main():
-    tools_controller = ToolsController(handle_tools_error=False)
+    tools_controller = ToolsController()
 
     @controller.registry.tool("Check weather", param_model=CheckWeather)
     async def check_weather(params: CheckWeather) -> ToolResult:
