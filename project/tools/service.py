@@ -11,7 +11,7 @@ class ToolsController():
 	def __init__(
 		self,
 		exclude_tools: list[str] = [],
-		include_done_tool:bool = True
+		include_done_tool:bool = True,
 	):
 		self.exclude_tools = exclude_tools
 		self.registry = Registry(exclude_tools)
@@ -43,6 +43,7 @@ class ToolsController():
 						return ToolResult()
 					else:
 						raise ValueError(f'Invalid tool result type: {type(result)} of {result}')
+					
 			return ToolResult()
 		except Exception as e:
 			raise e

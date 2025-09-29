@@ -1,7 +1,5 @@
 from pydantic import BaseModel
-from enum import Enum
 from pydantic import Field, BaseModel, create_model, ConfigDict
-from typing import Union
 from tools.views import ToolModel
 
 class AgentOutput(BaseModel):
@@ -32,5 +30,7 @@ class AgentOutput(BaseModel):
 		return model_
 
 class AgentResult(BaseModel):
-    content: str
-    successfull: str
+	content: str
+	history: list
+	success: bool = True
+	errors: str|None = None

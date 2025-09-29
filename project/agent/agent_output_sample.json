@@ -1,22 +1,22 @@
 
 [
     {
-        "evaluation_previous_goal": "im just starting",
-        "memory": "no memory",
-        "next_goal": "i want to call weather",
+        "evaluation_previous_goal": "No actions performed yet",
+        "memory": "No memory",
+        "next_goal": "Since user task is to check weather of kochi, i want to call weather checking tool",
         "choice":{
-            "weather_func":{
+            "weather_tool":{
                 "city":"kochi",
                 "country":"india"
             }
         }
     },{
-        "evaluation_previous_goal": "i called x, and got output y",
-        "memory": "got weather",
-        "next_goal": "just give to the user",
+        "evaluation_previous_goal": "I got weather of kochi as 31 degree warm and cloudy",
+        "memory": "Called weather tool and got output",
+        "next_goal": "Give user summary of weather",
         "choice":{
             "done":{
-                "summary":"this is output, weather"
+                "summary":"Weather of kochi is 31 degree celcius warm and very cloudy."
             }
         }
     }

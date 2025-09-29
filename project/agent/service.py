@@ -56,4 +56,5 @@ class Agent():
             
             self.message_manager.add_response(result.content, tool_call_id)
 
+        
         return result.content
