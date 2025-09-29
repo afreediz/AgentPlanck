@@ -47,7 +47,11 @@ async def main():
     async def sql(params: ExecDb) -> ToolResult:
         return ToolResult(content="Successfully executed query")
     
-    agent = Agent("Check weather of San Francisco and insert to my db", llm=llm, tools_controller=tools_controller)
+    agent = Agent(
+        "Check weather of San Francisco and insert to my db", 
+        llm=llm, 
+        tools_controller=tools_controller
+    )
     res = await agent.run()
     print(res)
 
