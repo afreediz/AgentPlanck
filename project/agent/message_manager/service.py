@@ -37,6 +37,8 @@ class MessageManager:
 		self.max_error_length = max_error_length
 		self.message_context = message_context
 
+		self.IMG_TOKENS = 800 # rough estimate of tokens per image
+
 		system_prompt = system_prompt if system_prompt is not None else SystemPrompt()
 		system_message = system_prompt.get_system_message(tools_description=tools_description)
 
@@ -63,36 +65,6 @@ class MessageManager:
 		msg = HumanMessage(content=content)
 		self._add_message_with_tokens(msg)
 
-	# Guide the model through states, in future if needed
-	# def add_state_message(
-	# 	self,
-	# 	result: Optional[List[ActionResult]] = None,
-	# 	step_info: Optional[AgentStepInfo] = None,
-	# ) -> None:
-	# 	"""Add browser state as human message"""
-
-	# 	# if keep in memory, add to directly to history and add state without result
-	# 	if result:
-	# 		for r in result:
-	# 			if r.include_in_memory:
-	# 				if r.extracted_content:
-	# 					msg = HumanMessage(content='Action result: ' + str(r.extracted_content))
-	# 					self._add_message_with_tokens(msg)
-	# 				if r.error:
-	# 					msg = HumanMessage(content='Action error: ' + str(r.error)[-self.max_error_length :])
-	# 					self._add_message_with_tokens(msg)
-	# 				result = None  # if result in history, we dont want to add it again
-
-	# 	# otherwise add state message and result to next message (which will not stay in memory)
-	# 	state_message = AgentMessagePrompt(
-	# 		state,
-	# 		result,
-	# 		include_attributes=self.include_attributes,
-	# 		max_error_length=self.max_error_length,
-	# 		step_info=step_info,
-	# 	).get_user_message()
-	# 	self._add_message_with_tokens(state_message)
-
 	def add_ai_message(self, message:str) -> None:
 		self._add_message_with_tokens(
 			AIMessage(content=message)
@@ -103,19 +75,19 @@ class MessageManager:
 			HumanMessage(content=message)
 		)
 
-	def add_raw_tool_message(self, message: str) -> None:
+	def add_tool_message(self, message: str) -> None:
 		self._add_message_with_tokens(
 			ToolMessage(
 				content=message,
 			)
 		)
 
-	def add_tool_message(self, message:str, name:str) -> None:
+	def add_proper_tool_message(self, message:str, name:str, call_id: int) -> None:
 		self._add_message_with_tokens(
 			ToolMessage(
 				content=message,
 				name=name,
-				tool_call_id=name
+				tool_call_id=call_id
 			)
 		)
 
@@ -149,7 +121,7 @@ class MessageManager:
 
 		return message
 
-	def add_model_output(self, model_output: AgentOutput) -> None:
+	def add_model_output(self, model_output: AgentOutput, tool_call_id: str) -> None:
 		"""Add model output as AI message"""
 
 		choice = model_output.choice.model_dump()
@@ -159,7 +131,7 @@ class MessageManager:
 			{
 				'name': key_name,
 				'args': param,
-				'id': key_name,
+				'id': tool_call_id,
 				'type': 'tool_call',
 			}
 		]
@@ -170,14 +142,12 @@ class MessageManager:
 		)
 		self._add_message_with_tokens(msg)
 
-	def add_response(self, action: AgentOutput, result: str) -> None:
-		key_name, param = self.get_key_param(action.choice.model_dump())
+	def add_response(self, result: str, tool_call_id: str) -> None:
 		tool_message = ToolMessage(
 			content=result,
-			tool_call_id=key_name,
+			tool_call_id=tool_call_id,
 		)
 		self._add_message_with_tokens(tool_message)
-		self.tool_id += 1
 
 	def get_messages(self) -> List[BaseMessage]:
 		"""Get current message list, potentially trimmed to max tokens"""

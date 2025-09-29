@@ -109,7 +109,7 @@ class Registry:
 		# Create individual tool models for each tools
 		individual_tool_models: list[type[BaseModel]] = []
 
-		print("AVAILABLE TOOLS : ", " ,".join([key for (key, value) in available_tools.items()]))
+		# print("AVAILABLE TOOLS : ", " ,".join([key for (key, value) in available_tools.items()]))
 		for name, tool in available_tools.items():
 			# Create an individual model for each tool that contains only one field
 			individual_model = create_model(

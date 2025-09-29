@@ -1,12 +1,11 @@
-from tools import ToolsController, ToolResult
-from langchain_openai import AzureChatOpenAI
+from tools import ToolsController
 from typing import Type, TypeVar
 from pydantic import BaseModel
 from tools.views import AgentOutput
+from langchain.chat_models.base import BaseChatModel
 from agent.message_manager import MessageManager
-
-import os
 import logging
+
 logging.basicConfig(
     level=logging.DEBUG,  # or logging.INFO
     format="%(asctime)s - %(levelname)s - %(message)s"
@@ -15,16 +14,9 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 T = TypeVar('T', bound=BaseModel)
 
-llm = AzureChatOpenAI(
-    model=os.environ.get('MODEL_NAME'), 
-    api_key=os.environ.get('AZURE_OPENAI_KEY'),
-    azure_endpoint=os.environ.get('AZURE_OPEAI_BASE'),
-    api_version=os.environ.get('AZURE_OPENAI_VERSION')
-)
-
 class Agent():
-    def __init__(self, task, tools_controller: ToolsController = ToolsController()):
-        self.llm = llm
+    def __init__(self, task: str, llm: BaseChatModel, tools_controller: ToolsController = ToolsController()):
+        self.llm:BaseChatModel = llm
         self.tools_controller = tools_controller
 
         self.ToolOutputModel = self.tools_controller.registry.create_tool_model()
@@ -43,7 +35,7 @@ class Agent():
         except Exception as e:
             raise e
 
-    async def run(self) -> None:
+    async def run(self) -> str:
         while True:
             messages = self.message_manager.get_messages()
             next_action = await self.get_structured_response(messages, response_model=self.AgentOutput)
@@ -61,3 +53,5 @@ class Agent():
                 break
             
             self.message_manager.add_response(result.content)
+
+        return result.content

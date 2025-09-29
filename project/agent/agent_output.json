@@ -1,0 +1,22 @@
+[
+    {
+        "evaluation_previous_goal": "im just starting",
+        "memory": "no memory",
+        "next_goal": "i want to call weather",
+        "choice":{
+            "weather_func":{
+                "city":"kochi",
+                "country":"india"
+            }
+        }
+    },{
+        "evaluation_previous_goal": "i called x, and got output y",
+        "memory": "got weather",
+        "next_goal": "just give to the user",
+        "choice":{
+            "done":{
+                "summary":"this is output, weather"
+            }
+        }
+    }
+]
