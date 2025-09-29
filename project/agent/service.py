@@ -4,10 +4,11 @@ from pydantic import BaseModel
 from tools.views import AgentOutput
 from langchain.chat_models.base import BaseChatModel
 from agent.message_manager import MessageManager
+from utils.general import generate_random
 import logging
 
 logging.basicConfig(
-    level=logging.DEBUG,  # or logging.INFO
+    level=logging.INFO,  # or logging.INFO
     format="%(asctime)s - %(levelname)s - %(message)s"
 )
 
@@ -39,10 +40,11 @@ class Agent():
         while True:
             messages = self.message_manager.get_messages()
             next_action = await self.get_structured_response(messages, response_model=self.AgentOutput)
-            logger.info(f'\n\nPrev goal: {next_action.evaluation_previous_goal}\nMemory: {next_action.memory}\nNext goal: {next_action.next_goal}')
-            logger.info(f'choosed : {next_action.choice.model_dump()}')
 
-            self.message_manager.add_model_output(next_action)
+            tool_call_id = generate_random()
+            self.message_manager.add_model_output(next_action, tool_call_id)
+
+            logger.info(self.message_manager.format_agentoutput(next_action))
 
             result = await self.tools_controller.act(next_action.choice)
             logger.info(f"result : {result.content}")
@@ -52,6 +54,6 @@ class Agent():
                 logger.info(f"total tokens: {self.message_manager.history.total_tokens}")
                 break
             
-            self.message_manager.add_response(result.content)
+            self.message_manager.add_response(result.content, tool_call_id)
 
         return result.content

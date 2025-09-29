@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 import json
 import logging
 from typing import List, Optional
@@ -11,7 +9,7 @@ from langchain_core.messages import (
 	SystemMessage,
 	ToolMessage,
 )
-
+from utils.general import get_key_param
 from agent.message_manager.views import MessageHistory, MessageMetadata
 from agent.prompts import SystemPrompt
 from agent.views import AgentOutput
@@ -54,78 +52,27 @@ class MessageManager:
 		self.tool_id = 1
 
 	@staticmethod
-	def task_instructions(task: str) -> HumanMessage:
+	def task_instructions(task: str) -> str:
 		content = f'Your ultimate task is: {task}. If you achieved your ultimate task, stop everything and use the done action in the next step to complete the task. If not, continue as usual.'
-		return HumanMessage(content=content)
+		return content
+	
+	def add_message(self, message: BaseMessage) -> None:
+		self._add_message_with_tokens(message)
 
 	def add_new_task(self, new_task: str) -> None:
-		content = (
-			f'Your new ultimate task is: {new_task}. Take the previous context into account and finish your new ultimate task. '
-		)
-		msg = HumanMessage(content=content)
+		msg = HumanMessage(f'Your new ultimate task is: {new_task}. Take the previous context into account and finish your new ultimate task. ')
 		self._add_message_with_tokens(msg)
-
-	def add_ai_message(self, message:str) -> None:
-		self._add_message_with_tokens(
-			AIMessage(content=message)
-		)
 
 	def add_human_message(self, message:str) -> None:
 		self._add_message_with_tokens(
 			HumanMessage(content=message)
 		)
 
-	def add_tool_message(self, message: str) -> None:
-		self._add_message_with_tokens(
-			ToolMessage(
-				content=message,
-			)
-		)
-
-	def add_proper_tool_message(self, message:str, name:str, call_id: int) -> None:
-		self._add_message_with_tokens(
-			ToolMessage(
-				content=message,
-				name=name,
-				tool_call_id=call_id
-			)
-		)
-
-	def pretty_print_messages(self) -> None:
-		logger.info('------------------------------------------------------------------------------------------------')
-		for message in self.history.messages[2:]:
-			message = message.message
-			if isinstance(message, ToolMessage):
-				logger.info(f"TOOL({message.name}): {message.content}")
-			elif isinstance(message, AIMessage):
-				logger.info(f"AI: {message.content}, calling tools: {', '.join([m.get('name') for m in message.tool_calls])}")
-			elif isinstance(message, HumanMessage):
-				logger.info(f"HUMAN: {message.content}")
-			else:
-				logger.info(f"{message.content}")
-		logger.info('------------------------------------------------------------------------------------------------')
-
-	def get_key_param(self, model: dict):
-		for key, value in model.items():
-			key_name = key
-			param = value
-			break
-
-		return key_name, param
-
-	def format_agentoutput(self, model_output: AgentOutput):
-		message = ""
-		message += f"{model_output.evaluation_previous_goal}, {model_output.memory}, {model_output.next_goal}, "
-		message += "For this i will call:\n"
-		message += model_output.choice.model_dump_json()
-
-		return message
-
 	def add_model_output(self, model_output: AgentOutput, tool_call_id: str) -> None:
 		"""Add model output as AI message"""
 
 		choice = model_output.choice.model_dump()
-		key_name, param = self.get_key_param(choice)
+		key_name, param = get_key_param(choice)
 
 		tool_calls = [
 			{
@@ -142,12 +89,33 @@ class MessageManager:
 		)
 		self._add_message_with_tokens(msg)
 
-	def add_response(self, result: str, tool_call_id: str) -> None:
-		tool_message = ToolMessage(
-			content=result,
-			tool_call_id=tool_call_id,
+	def add_response(self, message:str, call_id: int) -> None:
+		self._add_message_with_tokens(
+			ToolMessage(
+				content=message,
+				tool_call_id=call_id
+			)
 		)
-		self._add_message_with_tokens(tool_message)
+
+	def format_agentoutput(self, model_output: AgentOutput) -> str:
+		message = ""
+		message += f"Prev goal: {model_output.evaluation_previous_goal},Memory: {model_output.memory},Next goal: {model_output.next_goal}. For this i will call:\n"
+		message += model_output.choice.model_dump_json()
+		return message
+
+	def pretty_print_messages(self) -> None:
+		logger.info('------------------------------------------------------------------------------------------------')
+		for message in self.history.messages[2:]:
+			message = message.message
+			if isinstance(message, ToolMessage):
+				logger.info(f"TOOL({message.name}): {message.content}")
+			elif isinstance(message, AIMessage):
+				logger.info(f"AI: {message.content}, calling tools: {', '.join([m.get('name') for m in message.tool_calls])}")
+			elif isinstance(message, HumanMessage):
+				logger.info(f"HUMAN: {message.content}")
+			else:
+				logger.info(f"{message.content}")
+		logger.info('------------------------------------------------------------------------------------------------')
 
 	def get_messages(self) -> List[BaseMessage]:
 		"""Get current message list, potentially trimmed to max tokens"""
