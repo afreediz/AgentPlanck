@@ -12,8 +12,10 @@ class ToolsController():
 		self,
 		exclude_tools: list[str] = [],
 		include_done_tool:bool = True,
+		handle_tools_error:bool = True
 	):
 		self.exclude_tools = exclude_tools
+		self.handle_tools_error = handle_tools_error
 		self.registry = Registry(exclude_tools)
 
 		if include_done_tool:
@@ -45,5 +47,9 @@ class ToolsController():
 						raise ValueError(f'Invalid tool result type: {type(result)} of {result}')
 					
 			return ToolResult()
+		
 		except Exception as e:
+			if self.handle_tools_error: # let llm handle errors
+				return ToolResult(success=False, error=str(e))
+			
 			raise e

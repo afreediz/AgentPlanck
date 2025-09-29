@@ -9,6 +9,7 @@ from langchain_core.messages import (
 	ToolMessage,
 )
 from utils.general import get_key_param
+from tools.views import ToolResult
 from agent.message_manager.views import MessageHistory, MessageMetadata
 from agent.prompts import SystemPrompt
 from agent.views import AgentOutput
@@ -88,13 +89,21 @@ class MessageManager:
 		)
 		self._add_message_with_tokens(msg)
 
-	def add_response(self, message:str, call_id: int) -> None:
-		self._add_message_with_tokens(
-			ToolMessage(
-				content=message,
-				tool_call_id=call_id
+	def add_response(self, message:ToolResult, call_id: int) -> None:
+		if message.error:
+			self._add_message_with_tokens(
+				ToolMessage(
+					content=message.error,
+					tool_call_id=call_id
+				)
 			)
-		)
+		else:
+			self._add_message_with_tokens(
+				ToolMessage(
+					content=message.content,
+					tool_call_id=call_id
+				)
+			)
 
 	def format_agentoutput(self, model_output: AgentOutput) -> str:
 		message = ""
@@ -116,9 +125,8 @@ class MessageManager:
 				logger.info(f"{message.content}")
 		logger.info('------------------------------------------------------------------------------------------------')
 
-	def get_messages(self) -> List[BaseMessage]:
+	def get_messages(self, include_system_message:bool = True) -> List[BaseMessage]:
 		"""Get current message list, potentially trimmed to max tokens"""
-
 		msg = [m.message for m in self.history.messages]
 		# debug which messages are in history with token count # log
 		total_input_tokens = 0
@@ -126,9 +134,10 @@ class MessageManager:
 		for m in self.history.messages:
 			total_input_tokens += m.metadata.input_tokens
 			# logger.debug(f'{m.message.__class__.__name__} - Token count: {m.metadata.input_tokens}')
+
 		logger.info(f'Total input tokens: {total_input_tokens}')
 
-		return msg
+		return msg if include_system_message else msg[1:]
 
 	def _add_message_with_tokens(self, message: BaseMessage) -> None:
 		"""Add message with token count metadata"""

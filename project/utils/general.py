@@ -9,5 +9,5 @@ def get_key_param(model: dict) -> Tuple[Any, Any]:
 
     return key_name, param
 
-def generate_random() -> str:
-    return uuid4().hex
+def generate_random(max_length:int = 5) -> str:
+    return uuid4().hex[:max_length+1]

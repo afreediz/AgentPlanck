@@ -1,7 +1,7 @@
 from tools import ToolsController
 from typing import Type, TypeVar
 from pydantic import BaseModel
-from tools.views import AgentOutput
+from agent.views import AgentOutput, AgentResult
 from langchain.chat_models.base import BaseChatModel
 from agent.message_manager import MessageManager
 from utils.general import generate_random
@@ -37,24 +37,38 @@ class Agent():
             raise e
 
     async def run(self) -> str:
-        while True:
-            messages = self.message_manager.get_messages()
-            next_action = await self.get_structured_response(messages, response_model=self.AgentOutput)
-
-            tool_call_id = generate_random()
-            self.message_manager.add_model_output(next_action, tool_call_id)
-
-            logger.info(self.message_manager.format_agentoutput(next_action))
-
-            result = await self.tools_controller.act(next_action.choice)
-            logger.info(f"result : {result.content}")
-
-            if result.is_done:
-                logger.info(f"\n\nCompleted!, {result.content}")
-                logger.info(f"total tokens: {self.message_manager.history.total_tokens}")
-                break
+        try:
+            tool_errors_count = 0
             
-            self.message_manager.add_response(result.content, tool_call_id)
+            while True:
+                messages = self.message_manager.get_messages()
+                next_action = await self.get_structured_response(messages, response_model=self.AgentOutput)
 
+                tool_call_id = generate_random()
+                self.message_manager.add_model_output(next_action, tool_call_id)
+
+                logger.info(self.message_manager.format_agentoutput(next_action))
+
+                result = await self.tools_controller.act(next_action.choice)
+                logger.info(f"result : {result.content}")
+
+                self.message_manager.add_response(result, tool_call_id)
+
+                # Stop if 3 concecutive tool errors came to avoid looping
+                if result.error is not None:
+                    tool_errors_count += 1
+
+                    if tool_errors_count > 2:
+                        raise Exception(f"3 concecutive tool errors, exiting. Error: {result.error}")
+                else:
+                    tool_errors_count = 0
+
+                if result.is_done:
+                    logger.info(f"\n\nCompleted!, {result.content}")
+                    logger.info(f"total tokens: {self.message_manager.history.total_tokens}")
+                    break
+
+            return AgentResult(content=result.content, history=self.message_manager.get_messages(include_system_message=False))
         
-        return result.content
+        except Exception as e:
+            return AgentResult(content=None, errors=str(e), history=self.message_manager.get_messages(include_system_message=False))

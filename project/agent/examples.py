@@ -21,7 +21,7 @@ class ExecDb(BaseModel):
     query: str
 
 async def main():
-    controller = ToolsController()
+    controller = ToolsController(handle_tools_error=False)
 
     @controller.registry.tool("Check weather", param_model=CheckWeather)
     async def check_weather(params: CheckWeather) -> ToolResult:
@@ -32,7 +32,8 @@ async def main():
         return ToolResult(content="Successfully executed query")
     
     agent = Agent("Check weather of sansfransisco and insert to my db", llm=llm, tools_controller=controller)
-    await agent.run()
+    res = await agent.run()
+    print(res)
 
 if __name__ == "__main__":
     asyncio.run(main())

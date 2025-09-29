@@ -30,7 +30,7 @@ class AgentOutput(BaseModel):
 		return model_
 
 class AgentResult(BaseModel):
-	content: str
-	history: list
+	content: str|None = None
+	history: list = []
 	success: bool = True
 	errors: str|None = None

@@ -2,8 +2,8 @@
 [
     {
         "evaluation_previous_goal": "No actions performed yet",
-        "memory": "No memory",
-        "next_goal": "Since user task is to check weather of kochi, i want to call weather checking tool",
+        "memory": "User task is to check weather of kochi",
+        "next_goal": "To check weather, i want to call weather checking tool",
         "choice":{
             "weather_tool":{
                 "city":"kochi",
