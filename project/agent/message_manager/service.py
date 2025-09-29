@@ -48,7 +48,7 @@ class MessageManager:
 			self._add_message_with_tokens(context_message)
 
 		task_message = self.task_instructions(task)
-		self._add_message_with_tokens(task_message)
+		self.add_human_message(task_message)
 		self.tool_id = 1
 
 	@staticmethod
