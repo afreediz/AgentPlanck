@@ -1,7 +1,6 @@
 import json
 import logging
 from typing import List, Optional
-from pydantic import BaseModel
 from langchain_core.messages import (
 	AIMessage,
 	BaseMessage,
