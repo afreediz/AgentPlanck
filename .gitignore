@@ -3,3 +3,5 @@ venv/
 .env
 test.*
 *.test.*
+dist/
+agent_planck.egg-info

@@ -1,6 +1,6 @@
 # AgentPlanck
 
-**Planck** is a A lightweight production ready agentic framework to build your agents.
+**AgentPlanck** is a a lightweight production ready agentic framework to build your agents.
 
 ---
 
