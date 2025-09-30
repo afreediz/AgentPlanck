@@ -31,6 +31,7 @@ class AgentOutput(BaseModel):
 
 class AgentResult(BaseModel):
 	content: str|None = None
+	tokens: int = 0
 	history: list = []
 	success: bool = True
 	errors: str|None = None

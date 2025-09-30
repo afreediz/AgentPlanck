@@ -65,6 +65,7 @@ class Agent():
                 else:
                     tool_errors_count = 0
 
+                iteration += 1
                 if iteration % 10 == 0:
                     self.message_manager.cut_history()
 
@@ -73,7 +74,7 @@ class Agent():
                     logger.info(f"total tokens: {self.message_manager.history.total_tokens}")
                     break
 
-            return AgentResult(content=result.content, history=self.message_manager.get_all_messages())
+            return AgentResult(content=result.content, history=self.message_manager.get_all_messages(), tokens=self.message_manager.history.total_tokens)
         
         except Exception as e:
             current_messages = self.message_manager.get_messages(include_system_message=False)
@@ -83,4 +84,4 @@ class Agent():
             output_messages.extend(self.message_manager.dropped_message)
             output_messages.extend(current_messages[1:])
 
-            return AgentResult(content=None, errors=str(e), history=self.message_manager.get_all_messages())
+            return AgentResult(content=None, errors=str(e), history=self.message_manager.get_all_messages(), tokens=self.message_manager.history.total_tokens)
