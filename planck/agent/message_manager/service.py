@@ -40,6 +40,8 @@ class MessageManager:
 		system_prompt = system_prompt if system_prompt is not None else SystemPrompt()
 		system_message = system_prompt.get_system_message(tools_description=tools_description)
 
+		self.dropped_message = []
+
 		self.system_prompt = system_message
 		self._add_message_with_tokens(system_message)
 
@@ -144,6 +146,41 @@ class MessageManager:
 		token_count = self._count_tokens(message)
 		metadata = MessageMetadata(input_tokens=token_count)
 		self.history.add_message(message, metadata)
+
+	def get_all_messages(self, include_system_message:bool = False) -> List[BaseMessage]:
+		current_messages = self.get_messages(include_system_message=include_system_message)
+
+		output_messages = []
+		if include_system_message:
+			output_messages.append(current_messages[0])
+			output_messages.append(current_messages[1])
+			output_messages.extend(self.dropped_message)
+			output_messages.extend(current_messages[2:])
+		else:
+			output_messages.append(current_messages[0])
+			output_messages.extend(self.dropped_message)
+			output_messages.extend(current_messages[1:])
+
+		return output_messages
+	
+	# later include more strategies
+	def cut_history(self, max_messages:int = 20) -> None:
+		if len(self.history.messages) <= 2:
+			return  # nothing to cut
+
+		# Always keep the first two - system message & human message discribing task
+		fixed = self.history.messages[:2]
+		rest = self.history.messages[2:]
+
+		to_drop = rest[:-max_messages] if len(rest) > max_messages else []
+		to_keep = rest[-max_messages:]
+
+		# Backup the dropped part
+		if to_drop:
+			self.dropped_message.extend(to_drop)
+
+		# Rebuild history
+		self.history.messages = fixed + to_keep
 
 	def _count_tokens(self, message: BaseMessage) -> int:
 		"""Count tokens in a message using the model's tokenizer"""

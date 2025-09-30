@@ -39,8 +39,10 @@ class Agent():
     async def run(self) -> str:
         try:
             tool_errors_count = 0
-            
+            iteration = 1
+
             while True:
+                logger.info(f"ITERATION : {iteration}")
                 messages = self.message_manager.get_messages()
                 next_action = await self.get_structured_response(messages, response_model=self.AgentOutput)
 
@@ -63,12 +65,22 @@ class Agent():
                 else:
                     tool_errors_count = 0
 
+                if iteration % 10 == 0:
+                    self.message_manager.cut_history()
+
                 if result.is_done:
                     logger.info(f"\n\nCompleted!, {result.content}")
                     logger.info(f"total tokens: {self.message_manager.history.total_tokens}")
                     break
 
-            return AgentResult(content=result.content, history=self.message_manager.get_messages(include_system_message=False))
+            return AgentResult(content=result.content, history=self.message_manager.get_all_messages())
         
         except Exception as e:
-            return AgentResult(content=None, errors=str(e), history=self.message_manager.get_messages(include_system_message=False))
+            current_messages = self.message_manager.get_messages(include_system_message=False)
+
+            output_messages = []
+            output_messages.append(current_messages[0])
+            output_messages.extend(self.message_manager.dropped_message)
+            output_messages.extend(current_messages[1:])
+
+            return AgentResult(content=None, errors=str(e), history=self.message_manager.get_all_messages())
