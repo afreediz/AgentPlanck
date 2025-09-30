@@ -23,7 +23,7 @@ It’s fitting for a system that takes **intelligent actions at minimal scales**
 
 ```python
 import asyncio
-from planck import Agent, ToolsController, ToolResult
+from agentplanck import Agent, ToolsController, ToolResult
 from pydantic import BaseModel
 from langchain_openai import ChatOpenAI
 from dotenv import load_dotenv

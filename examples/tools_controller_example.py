@@ -1,11 +1,11 @@
-from planck import Agent, ToolsController, ToolResult
+from agentplanck import Agent, ToolsController, ToolResult
 from pydantic import BaseModel
 import asyncio
-from langchain_openai import ChatOpenAI
+from langchain_openai import AzureChatOpenAI
 from dotenv import load_dotenv
 load_dotenv()
 
-llm = ChatOpenAI(model="gpt-4o")
+llm = AzureChatOpenAI(model="gpt-4o")
 
 class CheckWeather(BaseModel):
     city: str

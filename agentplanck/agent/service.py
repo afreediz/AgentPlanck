@@ -1,8 +1,8 @@
 from pydantic import BaseModel
-from planck.tools import ToolsController
-from planck.agent.views import AgentOutput, AgentResult
-from planck.agent.message_manager import MessageManager
-from planck.utils.general import generate_random
+from agentplanck.tools import ToolsController
+from agentplanck.agent.views import AgentOutput, AgentResult
+from agentplanck.agent.message_manager import MessageManager
+from agentplanck.utils.general import generate_random
 from typing import Type, TypeVar
 from langchain.chat_models.base import BaseChatModel
 import logging

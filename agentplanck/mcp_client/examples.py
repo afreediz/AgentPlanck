@@ -1,4 +1,4 @@
-from planck import ToolsController, MCPClient, Agent
+from agentplanck import ToolsController, MCPClient, Agent
 from langchain_openai import ChatOpenAI
 import asyncio
 from dotenv import load_dotenv

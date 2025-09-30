@@ -10,7 +10,7 @@ import time
 from typing import Any, Union
 
 from pydantic import BaseModel, Field, create_model
-from planck.tools import ToolResult, Registry, ToolsController
+from agentplanck.tools import ToolResult, Registry, ToolsController
 
 logger = logging.getLogger(__name__)
 

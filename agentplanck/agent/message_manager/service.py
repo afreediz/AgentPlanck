@@ -8,11 +8,11 @@ from langchain_core.messages import (
 	SystemMessage,
 	ToolMessage,
 )
-from planck.utils.general import get_key_param
-from planck.tools.views import ToolResult
-from planck.agent.prompts import SystemPrompt
-from planck.agent.views import AgentOutput
-from planck.agent.message_manager.views import MessageHistory, MessageMetadata
+from agentplanck.utils.general import get_key_param
+from agentplanck.tools.views import ToolResult
+from agentplanck.agent.prompts import SystemPrompt
+from agentplanck.agent.views import AgentOutput
+from agentplanck.agent.message_manager.views import MessageHistory, MessageMetadata
 
 logger = logging.getLogger(__name__)
 

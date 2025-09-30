@@ -1,5 +1,5 @@
-from planck.tools import ToolsController, ToolResult
-from planck.agent import Agent
+from agentplanck.tools import ToolsController, ToolResult
+from agentplanck.agent import Agent
 from pydantic import BaseModel
 from langchain_openai import ChatOpenAI
 import asyncio

@@ -1,4 +1,4 @@
-from planck.tools import ToolsController
+from agentplanck.tools import ToolsController
 from pydantic import BaseModel
 
 class SimpleModel(BaseModel):

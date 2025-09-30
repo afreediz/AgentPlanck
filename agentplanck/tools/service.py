@@ -1,9 +1,9 @@
 # TOOLS CONTROLLER LOGIC
 from pydantic import BaseModel
 from typing import TypeVar
-from planck.tools.registery.service import Registry
-from planck.tools.views import ToolModel, ToolResult
-from planck.tools.views import Done
+from agentplanck.tools.registery.service import Registry
+from agentplanck.tools.views import ToolModel, ToolResult
+from agentplanck.tools.views import Done
 
 T = TypeVar('T', bound=BaseModel)
 

@@ -3,8 +3,8 @@ from inspect import iscoroutinefunction, signature
 from typing import Any, Callable, Optional, Type
 
 from pydantic import BaseModel, Field, create_model, RootModel
-from planck.tools.views import ToolModel
-from planck.tools.registery.views import (
+from agentplanck.tools.views import ToolModel
+from agentplanck.tools.registery.views import (
 	ToolsRegistry,
 	RegisteredTool,
 )
