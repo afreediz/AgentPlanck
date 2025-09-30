@@ -1,19 +1,13 @@
 from planck.tools import ToolsController, ToolResult
 from planck.agent import Agent
 from pydantic import BaseModel
-from dotenv import load_dotenv
-from langchain_openai import AzureChatOpenAI
+from langchain_openai import ChatOpenAI
 import asyncio
-import os
-
+from dotenv import load_dotenv
 load_dotenv()
 
-llm = AzureChatOpenAI(
-    model=os.environ.get('MODEL_NAME'), 
-    api_key=os.environ.get('AZURE_OPENAI_KEY'),
-    azure_endpoint=os.environ.get('AZURE_OPENAI_BASE'),
-    api_version=os.environ.get('AZURE_OPENAI_VERSION')
-)
+llm = ChatOpenAI(model="gpt-4o")
+
 class CheckWeather(BaseModel):
     place: str
 

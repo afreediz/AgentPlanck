@@ -1,6 +1,6 @@
 # AgentPlanck
 
-**AgentPlanck** is a lightweight agentic framework I built to understand and experiment with how agents work under the hood.
+**Planck** is a A lightweight production ready agentic framework to build your agents.
 
 ---
 
@@ -23,10 +23,11 @@ It’s fitting for a system that takes **intelligent actions at minimal scales**
 
 ```python
 import asyncio
-from tools import ToolsController, ToolResult
-from agent import Agent
+from planck import Agent, ToolsController, ToolResult
 from pydantic import BaseModel
 from langchain_openai import ChatOpenAI
+from dotenv import load_dotenv
+load_dotenv()
 
 llm = ChatOpenAI(model="gpt-4o")
 
@@ -39,11 +40,11 @@ class ExecDb(BaseModel):
 async def main():
     tools_controller = ToolsController()
 
-    @controller.registry.tool("Check weather", param_model=CheckWeather)
+    @tools_controller.registry.tool("Check weather", param_model=CheckWeather)
     async def check_weather(params: CheckWeather) -> ToolResult:
         return ToolResult(content="Weather is hot, about 35°C")
 
-    @controller.registry.tool("Interact with database", param_model=ExecDb)
+    @tools_controller.registry.tool("Interact with database", param_model=ExecDb)
     async def sql(params: ExecDb) -> ToolResult:
         return ToolResult(content="Successfully executed query")
     

@@ -1,16 +1,10 @@
 from planck import ToolsController, MCPClient, Agent
-from langchain_openai import AzureChatOpenAI
-import os
+from langchain_openai import ChatOpenAI
 import asyncio
 from dotenv import load_dotenv
 load_dotenv()
 
-llm = AzureChatOpenAI(
-    model=os.environ.get('MODEL_NAME'), 
-    api_key=os.environ.get('AZURE_OPENAI_KEY'),
-    azure_endpoint=os.environ.get('AZURE_OPENAI_BASE'),
-    api_version=os.environ.get('AZURE_OPENAI_VERSION')
-)
+llm = ChatOpenAI(model="gpt-4o")
 
 async def main() -> None:
     # Connect to an MCP server

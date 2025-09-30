@@ -1,0 +1,23 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "planck"
+version = "0.1.0"
+description = "A lightweight production ready agentic framework to build your agents"
+readme = "README.md"
+requires-python = ">=3.8"
+license = {text = "MIT"}
+authors = [
+  {name = "Afreedi", email = "afreedisulfiker@gmail.com"}   
+]
+keywords = ["agent", "agentic framework", "artifical intelligence", "langchain"]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License"
+]
+
+dependencies = [
+    "requests>=2.0",
+]
