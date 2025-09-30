@@ -297,7 +297,7 @@ class MCPClient:
 		description = tool.description or f'MCP tool from {self.server_name}: {tool.name}'
 
 		# Use the registry's action decorator
-		registry.action(description=description, param_model=param_model)(
+		registry.tool(description=description, param_model=param_model)(
 			mcp_action_wrapper
 		)
 
