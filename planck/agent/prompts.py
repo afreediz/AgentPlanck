@@ -1,6 +1,4 @@
 from datetime import datetime
-from typing import List, Optional
-
 from langchain_core.messages import SystemMessage
 
 class SystemPrompt:

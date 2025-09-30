@@ -1,11 +1,9 @@
-from planck.tools import ToolsController, ToolResult
-from planck.agent import Agent
+from planck import Agent, ToolsController, ToolResult
 from pydantic import BaseModel
-from dotenv import load_dotenv
 from langchain_openai import AzureChatOpenAI
+from dotenv import load_dotenv
 import asyncio
 import os
-
 load_dotenv()
 
 llm = AzureChatOpenAI(
@@ -14,28 +12,32 @@ llm = AzureChatOpenAI(
     azure_endpoint=os.environ.get('AZURE_OPENAI_BASE'),
     api_version=os.environ.get('AZURE_OPENAI_VERSION')
 )
+# llm = ChatOpenAI(model="gpt-4o")
+
 class CheckWeather(BaseModel):
-    place: str
+    city: str
 
 class ExecDb(BaseModel):
     query: str
 
 async def main():
-    controller = ToolsController(handle_tools_error=False)
+    tools_controller = ToolsController()
 
-    @controller.registry.tool("Check weather", param_model=CheckWeather)
+    @tools_controller.registry.tool("Check weather", param_model=CheckWeather)
     async def check_weather(params: CheckWeather) -> ToolResult:
-        return ToolResult(content="Weather is hot, about 35 degree celcius")
+        return ToolResult(content="Weather is hot, about 35°C")
 
-    @controller.registry.tool("Interact with database", param_model=ExecDb)
+    @tools_controller.registry.tool("Interact with database", param_model=ExecDb)
     async def sql(params: ExecDb) -> ToolResult:
         return ToolResult(content="Successfully executed query")
     
-    agent = Agent("Check weather of sansfransisco and insert to my db", llm=llm, tools_controller=controller)
+    agent = Agent(
+        "Check weather of San Francisco and insert to my db", 
+        llm=llm, 
+        tools_controller=tools_controller
+    )
     res = await agent.run()
     print(res)
 
 if __name__ == "__main__":
     asyncio.run(main())
-else:
-    raise RuntimeError("Examples cannot be imported")

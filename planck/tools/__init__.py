@@ -1,6 +1,6 @@
-from tools.service import ToolsController
-from tools.views import ToolResult
-from tools.registery.service import Registry
+from planck.tools.service import ToolsController
+from planck.tools.views import ToolResult
+from planck.tools.registery.service import Registry
 
 __all__ = [
     'ToolsController',

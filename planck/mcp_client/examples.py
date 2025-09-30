@@ -1,6 +1,6 @@
-from tools import ToolsController
-from mcp_client.service import MCPClient
-from agent import Agent
+from planck.tools import ToolsController
+from planck.mcp_client.service import MCPClient
+from planck.agent import Agent
 import asyncio
 
 

@@ -3,11 +3,11 @@ from inspect import iscoroutinefunction, signature
 from typing import Any, Callable, Optional, Type
 
 from pydantic import BaseModel, Field, create_model, RootModel
-from tools.registery.views import (
+from planck.tools.views import ToolModel
+from planck.tools.registery.views import (
 	ToolsRegistry,
 	RegisteredTool,
 )
-from tools.views import ToolModel
 
 class Registry:
 	"""Service for registering and managing tools"""

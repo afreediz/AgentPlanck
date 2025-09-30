@@ -1,6 +1,6 @@
 from pydantic import BaseModel
 from pydantic import Field, BaseModel, create_model, ConfigDict
-from tools.views import ToolModel
+from planck.tools.views import ToolModel
 
 class AgentOutput(BaseModel):
 	model_config = ConfigDict(arbitrary_types_allowed=True, extra='forbid')

@@ -1,5 +1,4 @@
 from typing import Callable, Dict, Type
-
 from pydantic import BaseModel, ConfigDict
 
 
