@@ -28,7 +28,7 @@ from agent import Agent
 from pydantic import BaseModel
 from langchain_openai import ChatOpenAI
 
-llm = ChatOpenAI(model="gpt4o")
+llm = ChatOpenAI(model="gpt-4o")
 
 class CheckWeather(BaseModel):
     city: str
