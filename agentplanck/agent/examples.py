@@ -17,11 +17,11 @@ class ExecDb(BaseModel):
 async def main():
     controller = ToolsController(handle_tools_error=False)
 
-    @controller.registry.tool("Check weather", param_model=CheckWeather)
+    @controller.tool("Check weather", param_model=CheckWeather)
     async def check_weather(params: CheckWeather) -> ToolResult:
         return ToolResult(content="Weather is hot, about 35 degree celcius")
 
-    @controller.registry.tool("Interact with database", param_model=ExecDb)
+    @controller.tool("Interact with database", param_model=ExecDb)
     async def sql(params: ExecDb) -> ToolResult:
         return ToolResult(content="Successfully executed query")
     

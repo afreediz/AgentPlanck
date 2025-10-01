@@ -19,7 +19,7 @@ class ToolsController():
 		self.registry = Registry(exclude_tools)
 
 		if include_done_tool:
-			@self.registry.tool("Complete task - provide a summary of results for the user. Set success=True if task completed successfully, false otherwise. Text should be your response to the user summarizing results.", param_model=Done)
+			@self.tool("Complete task - provide a summary of results for the user. Set success=True if task completed successfully, false otherwise. Text should be your response to the user summarizing results.", param_model=Done)
 			async def done(params: Done) -> ToolResult:
 				return ToolResult(content=params.summary, is_done=True)
 

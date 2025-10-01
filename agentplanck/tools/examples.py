@@ -7,11 +7,11 @@ class SimpleModel(BaseModel):
 def main():
     controller = ToolsController()
 
-    @controller.registry.tool("Test func1", param_model=SimpleModel)
+    @controller.tool("Test func1", param_model=SimpleModel)
     async def func1(params: SimpleModel):
         print('execute func1')
 
-    @controller.registry.tool("Test func2", param_model=SimpleModel)
+    @controller.tool("Test func2", param_model=SimpleModel)
     async def func2(params: SimpleModel):
         print("executed func2", params)
 
